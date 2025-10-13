@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Tap Counter</title>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 50px; background: #f0f8ff; }
+        button { padding: 15px 30px; font-size: 18px; margin: 10px; border: none; border-radius: 8px; background: #4CAF50; color: white; cursor: pointer; }
+        button:hover { background: #45a049; }
+        #counter { font-size: 24px; margin: 20px; }
+        #floating-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #ff5722;
+            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 9999; display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>🎯 Floating Tap Counter</h2>
+    <button id="startBtn">▶️ Start Counting</button>
+    <div id="counter">Count: 0</div>
+    <button onclick="resetCounter()">🔁 Reset</button>
+    <div id="floating-btn">+</div>
+
+    <script>
+        let count = 0;
+        const counterDiv = document.getElementById('counter');
+        const floatingBtn = document.getElementById('floating-btn');
+        const startBtn = document.getElementById('startBtn');
+
+        startBtn.addEventListener('click', () => {
+            if (window.Android && window.Android.requestOverlayPermission) {
+                window.Android.requestOverlayPermission();
+                floatingBtn.style.display = 'flex';
+                startBtn.disabled = true;
+                startBtn.innerText = "✅ Running...";
+            } else {
+                alert("⚠️ Please install as APK and grant 'Draw Over Other Apps' permission.");
+            }
+        });
+
+        floatingBtn.addEventListener('click', () => {
+            count++;
+            counterDiv.innerText = "Count: " + count;
+            if (window.Android && window.Android.showToast) {
+                window.Android.showToast("Tap #" + count);
+            }
+        });
+
+        function resetCounter() {
+            count = 0;
+            counterDiv.innerText = "Count: 0";
+        }
+
+        // Save & Load from localStorage
+        window.onload = () => {
+            const saved = localStorage.getItem('tapCount');
+            if (saved) {
+                count = parseInt(saved);
+                counterDiv.innerText = "Count: " + count;
+            }
+        };
+        floatingBtn.addEventListener('click', () => localStorage.setItem('tapCount', count));
+    </script>
+</body>
+</html>
