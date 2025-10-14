@@ -1,67 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Floating Tap Counter</title>
-    <style>
-        body { font-family: Arial; text-align: center; padding: 50px; background: #f0f8ff; }
-        button { padding: 15px 30px; font-size: 18px; margin: 10px; border: none; border-radius: 8px; background: #4CAF50; color: white; cursor: pointer; }
-        button:hover { background: #45a049; }
-        #counter { font-size: 24px; margin: 20px; }
-        #floating-btn {
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #ff5722;
-            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 9999; display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copy Text with Current Date</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      background-color: #A4CFDF;
+    }
+    .container {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-family: Arial, sans-serif;
+      height: 80px;
+    }
+    .text-box {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 450px;
+    }
+    button {
+      width: 60px;
+      height: 30px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    p {
+      font-weight: bolder;
+      font-size: 20px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-weight: bolder;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <h2>🎯 Floating Tap Counter</h2>
-    <button id="startBtn">▶️ Start Counting</button>
-    <div id="counter">Count: 0</div>
-    <button onclick="resetCounter()">🔁 Reset</button>
-    <div id="floating-btn">+</div>
 
-    <script>
-        let count = 0;
-        const counterDiv = document.getElementById('counter');
-        const floatingBtn = document.getElementById('floating-btn');
-        const startBtn = document.getElementById('startBtn');
+  <h1>FW Start & End Time</h1>
 
-        startBtn.addEventListener('click', () => {
-            if (window.Android && window.Android.requestOverlayPermission) {
-                window.Android.requestOverlayPermission();
-                floatingBtn.style.display = 'flex';
-                startBtn.disabled = true;
-                startBtn.innerText = "✅ Running...";
-            } else {
-                alert("⚠️ Please install as APK and grant 'Draw Over Other Apps' permission.");
-            }
-        });
+  <div class="container">
+    <div class="text-box">
+      <p id="startText"></p>
+      <button onclick="copyToClipboard('startText', this)"><i class="fa-regular fa-clone"></i></button>
+    </div>
 
-        floatingBtn.addEventListener('click', () => {
-            count++;
-            counterDiv.innerText = "Count: " + count;
-            if (window.Android && window.Android.showToast) {
-                window.Android.showToast("Tap #" + count);
-            }
-        });
+    <div class="text-box">
+      <p id="endText"></p>
+      <button onclick="copyToClipboard('endText', this)"><i class="fa-regular fa-clone"></i></button>
+    </div>
+  </div>
 
-        function resetCounter() {
-            count = 0;
-            counterDiv.innerText = "Count: 0";
-        }
+  <script>
+    // 🕒 Function to get Indian Standard Time (IST)
+    function getIndianTime() {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const ist = new Date(utc + (5.5 * 60 * 60 * 1000));
+      return ist;
+    }
 
-        // Save & Load from localStorage
-        window.onload = () => {
-            const saved = localStorage.getItem('tapCount');
-            if (saved) {
-                count = parseInt(saved);
-                counterDiv.innerText = "Count: " + count;
-            }
-        };
-        floatingBtn.addEventListener('click', () => localStorage.setItem('tapCount', count));
-    </script>
+    // 📅 Function to get current date in DD/MM/YYYY format
+    function getCurrentDate() {
+      const now = getIndianTime();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    // 🕓 Determine time slot and return correct FW time
+    function getFWTime() {
+      const now = getIndianTime();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+
+      // Default time (11:30 PM – 3:29 PM)
+      let startTime = "12:30";
+      let endTime = "12:45";
+
+      if (hour === 15 && minute >= 30 || (hour === 16 && minute < 30)) { startTime = "13:30"; endTime = "13:45"; }
+      else if (hour === 16 && minute >= 30 || (hour === 17 && minute < 30)) { startTime = "14:30"; endTime = "14:45"; }
+      else if (hour === 17 && minute >= 30 || (hour === 18 && minute < 30)) { startTime = "15:30"; endTime = "15:45"; }
+      else if (hour === 18 && minute >= 30 || (hour === 19 && minute < 30)) { startTime = "16:30"; endTime = "16:45"; }
+      else if (hour === 19 && minute >= 30 || (hour === 20 && minute < 30)) { startTime = "17:30"; endTime = "17:45"; }
+      else if (hour === 20 && minute >= 30 || (hour === 21 && minute < 30)) { startTime = "18:30"; endTime = "18:45"; }
+      else if (hour === 21 && minute >= 30 || (hour === 22 && minute < 30)) { startTime = "19:30"; endTime = "19:45"; }
+      else if (hour === 22 && minute >= 30 || (hour === 23 && minute < 30)) { startTime = "20:30"; endTime = "20:45"; }
+      else if (hour === 23 && minute >= 30) { startTime = "12:30"; endTime = "12:45"; }
+
+      return { startTime, endTime };
+    }
+
+    // ⚙️ Update texts on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentDate = getCurrentDate();
+      const { startTime, endTime } = getFWTime();
+
+      document.getElementById('startText').textContent = `/a Start FW at ${startTime} on ${currentDate}`;
+      document.getElementById('endText').textContent = `/a End FW at ${endTime} on ${currentDate}`;
+    });
+
+    // 📋 Copy function
+    function copyToClipboard(elementId, button) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        button.innerHTML = "✔️";
+        setTimeout(() => button.innerHTML = '<i class="fa-regular fa-clone"></i>', 1500);
+      }).catch(err => alert("Copy failed: " + err));
+    }
+  </script>
+
 </body>
 </html>
