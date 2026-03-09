@@ -234,24 +234,4 @@
   </script>
 
 </body>
-</html>    // ⚙️ Update texts on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      const currentDate = getCurrentDate();
-      const { startTime, endTime } = getFWTime();
-
-      document.getElementById('startText').textContent = `/a Start FW at ${startTime} on ${currentDate}`;
-      document.getElementById('endText').textContent = `/a End FW at ${endTime} on ${currentDate}`;
-    });
-
-    // 📋 Copy function
-    function copyToClipboard(elementId, button) {
-      const text = document.getElementById(elementId).textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        button.innerHTML = "✔️";
-        setTimeout(() => button.innerHTML = '<i class="fa-regular fa-clone"></i>', 1500);
-      }).catch(err => alert("Copy failed: " + err));
-    }
-  </script>
-
-</body>
 </html>
