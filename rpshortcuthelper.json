@@ -1,8 +1,12 @@
 {
-  "tokens": [
+  "devices": [
     {
       "device_id": "b4a641fa07e582c8",
       "token": "2003"
+    },
+    {
+      "device_id": "xyz789ghi012",
+      "token": "anotherToken2"
     }
   ]
 }
